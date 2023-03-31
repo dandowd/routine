@@ -9,7 +9,7 @@ import (
 
 func ValidateJSONBody(body interface{}) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if err := c.ShouldBindBodyWith(body, binding.JSON); err != nil {
+		if err := c.ShouldBindBodyWith(&body, binding.JSON); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

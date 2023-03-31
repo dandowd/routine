@@ -1,13 +1,29 @@
 package common
 
-type Logger struct{}
+import "go.uber.org/zap"
 
-func (l *Logger) Info(args ...interface{}) {
+type zapLogger struct{ logger *zap.Logger }
+
+type Logger interface {
+	Info(msg string)
+	Error(msg string)
 }
 
-func (l *Logger) Error(args ...interface{}) {
+func (l *zapLogger) Info(msg string) {
+	l.logger.Info(msg)
+
 }
 
-func NewLogger() *Logger {
-	return &Logger{}
+func (l *zapLogger) Error(msg string) {
+	l.logger.Error(msg)
+}
+
+func NewLogger() Logger {
+	logger, err := zap.NewProduction()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return &zapLogger{logger}
 }

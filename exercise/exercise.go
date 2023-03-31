@@ -13,18 +13,18 @@ type ExerciseDto struct {
 }
 
 type ExerciseService struct {
-	logger *common.Logger
+	logger common.Logger
 }
 
 func (r *ExerciseService) createExerciseHandler(c *gin.Context) {
 	exercise := c.MustGet("body").(*ExerciseDto)
-	fmt.Println(exercise)
+	r.logger.Info(fmt.Sprintf("Exercise: %v", exercise))
 }
 
 func RegisterRoutes(router *gin.Engine, s *ExerciseService) {
 	router.POST("/exercise", common.ValidateJSONBody(&ExerciseDto{}), s.createExerciseHandler)
 }
 
-func NewExerciseService(logger *common.Logger) *ExerciseService {
+func NewExerciseService(logger common.Logger) *ExerciseService {
 	return &ExerciseService{logger: logger}
 }
