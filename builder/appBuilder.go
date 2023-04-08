@@ -3,6 +3,7 @@ package builder
 import (
 	"routine/common"
 	"routine/exercise"
+	"routine/infrastructure"
 
 	"go.uber.org/fx"
 )
@@ -11,6 +12,7 @@ func defaultProviders() fx.Option {
 	return fx.Options(
 		fx.Provide(NewHTTPServer),
 		fx.Provide(common.NewLogger),
+		fx.Provide(infrastructure.NewDynamoDbRepo[exercise.ExerciseEntity]),
 		fx.Provide(exercise.NewExerciseService),
 	)
 }

@@ -12,8 +12,14 @@ type ExerciseDto struct {
 	RepScheme int    `json:"reps" binding:"required"`
 }
 
+type ExerciseEntity struct {
+	Name      string `json:"name" binding:"required"`
+	RepScheme int    `json:"reps" binding:"required"`
+}
+
 type ExerciseService struct {
 	logger common.Logger
+	repo   common.Repository[ExerciseEntity]
 }
 
 func (r *ExerciseService) createExerciseHandler(c *gin.Context) {
@@ -25,6 +31,6 @@ func RegisterRoutes(router *gin.Engine, s *ExerciseService) {
 	router.POST("/exercise", common.ValidateJSONBody(&ExerciseDto{}), s.createExerciseHandler)
 }
 
-func NewExerciseService(logger common.Logger) *ExerciseService {
-	return &ExerciseService{logger: logger}
+func NewExerciseService(logger common.Logger, repo common.Repository[ExerciseEntity]) *ExerciseService {
+	return &ExerciseService{logger: logger, repo: repo}
 }
