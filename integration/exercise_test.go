@@ -36,7 +36,7 @@ func buildIntegrationOptions() fx.Option {
 func TestMain(m *testing.M) {
 	cxt := context.Background()
 
-	app := builder.AppBuilder(buildIntegrationOptions())
+	app := builder.AppBuilderWithOptions(buildIntegrationOptions())
 
 	startErr := app.Start(cxt)
 

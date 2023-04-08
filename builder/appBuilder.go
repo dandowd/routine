@@ -8,12 +8,12 @@ import (
 	"go.uber.org/fx"
 )
 
-func defaultProviders() fx.Option {
+func defaultOptions() fx.Option {
 	return fx.Options(
 		fx.Provide(NewHTTPServer),
-		fx.Provide(common.NewLogger),
-		fx.Provide(infrastructure.NewDynamoDbRepo[exercise.ExerciseEntity]),
-		fx.Provide(exercise.NewExerciseService),
+		common.Module,
+		infrastructure.Module,
+		exercise.Module,
 	)
 }
 
@@ -25,18 +25,16 @@ func defaultInvokers() fx.Option {
 
 func DefaultAppBuilder() *fx.App {
 	app := fx.New(
-		defaultProviders(),
-		defaultInvokers(),
+		defaultOptions(),
 	)
 
 	return app
 }
 
-func AppBuilder(addOptions fx.Option) *fx.App {
+func AppBuilderWithOptions(options fx.Option) *fx.App {
 	app := fx.New(
-		defaultProviders(),
-		addOptions,
-		defaultInvokers(),
+		defaultOptions(),
+		options,
 	)
 
 	return app
