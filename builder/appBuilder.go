@@ -17,12 +17,6 @@ func defaultOptions() fx.Option {
 	)
 }
 
-func defaultInvokers() fx.Option {
-	return fx.Options(
-		fx.Invoke(exercise.RegisterRoutes),
-	)
-}
-
 func DefaultAppBuilder() *fx.App {
 	app := fx.New(
 		defaultOptions(),
