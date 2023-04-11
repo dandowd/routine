@@ -5,31 +5,14 @@ import (
 	"net/http"
 	"os"
 	"routine/builder"
-	"routine/common"
 	"strings"
 	"testing"
 
 	"go.uber.org/fx"
 )
 
-type logMe struct{}
-
-func (l *logMe) Info(msg string) {
-	println("Fake logger: msg")
-}
-
-func (l *logMe) Error(msg string) {
-	println("Fake logger: msg")
-}
-
-func newLogger(logger common.Logger) common.Logger {
-	return &logMe{}
-}
-
 func buildIntegrationOptions() fx.Option {
-	return fx.Options(
-		fx.Decorate(newLogger),
-	)
+	return fx.Options()
 
 }
 

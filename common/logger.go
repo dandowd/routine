@@ -7,6 +7,7 @@ type zapLogger struct{ logger *zap.Logger }
 type Logger interface {
 	Info(msg string)
 	Error(msg string)
+	Fatal(msg string)
 }
 
 func (l *zapLogger) Info(msg string) {
@@ -16,6 +17,10 @@ func (l *zapLogger) Info(msg string) {
 
 func (l *zapLogger) Error(msg string) {
 	l.logger.Error(msg)
+}
+
+func (l *zapLogger) Fatal(msg string) {
+	l.logger.Fatal(msg)
 }
 
 func NewLogger() Logger {
