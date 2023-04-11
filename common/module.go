@@ -2,6 +2,7 @@ package common
 
 import "go.uber.org/fx"
 
-var Module = fx.Option(
+var Module = fx.Options(
 	fx.Provide(NewLogger),
+	fx.Provide(NewValidator),
 )
