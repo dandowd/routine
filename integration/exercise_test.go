@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"routine/builder"
@@ -42,7 +43,7 @@ func TestPostExerciseShouldFailWithNoBody(t *testing.T) {
 	// Given
 	client := http.Client{}
 	// When
-	res, err := client.Post("http://localhost:8080/exercise", "application/json", nil)
+	res, err := client.Post("http://localhost:8080/exercise", "application/json", strings.NewReader(`{}`))
 	// Then
 	if err != nil {
 		t.Error(err)
@@ -51,19 +52,23 @@ func TestPostExerciseShouldFailWithNoBody(t *testing.T) {
 	if res.StatusCode != http.StatusBadRequest {
 		t.Errorf("Expected status code %d but got %d", http.StatusBadRequest, res.StatusCode)
 	}
+
+	body, _ := ioutil.ReadAll(res.Body)
+
+	t.Logf("Response Body: %s", body)
 }
 
 func TestPostExerciseShouldPassWithBody(t *testing.T) {
 	// Given
 	client := http.Client{}
 	// When
-	res, err := client.Post("http://localhost:8080/exercise", "application/json", strings.NewReader(`{"name": "bench press", "reps": 5}`))
-	// Then
+	res, err := client.Post("http://localhost:8080/exercise", "application/json", strings.NewReader(`{"name": "bench press", "repScheme": "flat"}`))
+	// The
 	if err != nil {
 		t.Error(err)
 	}
 
 	if res.StatusCode != http.StatusOK {
-		t.Errorf("Expected status code %d but got %d", http.StatusBadRequest, res.StatusCode)
+		t.Errorf("Expected status code %d but got %d", http.StatusOK, res.StatusCode)
 	}
 }

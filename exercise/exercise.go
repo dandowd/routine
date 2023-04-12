@@ -1,6 +1,7 @@
 package exercise
 
 import (
+	"net/http"
 	"routine/common"
 
 	"github.com/gin-gonic/gin"
@@ -8,8 +9,8 @@ import (
 )
 
 type createExerciseDto struct {
-	Name      string    `json:"name" validate:"required"`
-	RepScheme RepScheme `json:"reps" validate:"required,oneof=flat rpe range"`
+	Name      string    `json:"name" binding:"required"`
+	RepScheme RepScheme `json:"repScheme" binding:"required,oneof=flat rpe range"`
 }
 
 type ExerciseEntity struct {
@@ -38,16 +39,16 @@ func (r *ExerciseService) createExerciseHandler(c *gin.Context) {
 	item, err := r.repo.Insert(ExerciseEntity{Id: uuid.New().String(), Name: exercise.Name, RepScheme: exercise.RepScheme})
 
 	if err != nil && err.Type() == common.DatabaseError {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, item)
+	c.JSON(http.StatusOK, item)
 	return
 }
 
-func RegisterRoutes(router *gin.Engine, s *ExerciseService) {
-	router.POST("/exercise", common.ValidateJSONBody(&createExerciseDto{}), s.createExerciseHandler)
+func RegisterRoutes(router *gin.Engine, s *ExerciseService, v *common.Validator) {
+	router.POST("/exercise", v.ValidateJSONBody(&createExerciseDto{}), s.createExerciseHandler)
 }
 
 func NewExerciseService(logger common.Logger, repo common.CollectionRepository[ExerciseEntity]) *ExerciseService {

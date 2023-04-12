@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,22 +12,31 @@ type Validator struct {
 	logger Logger
 }
 
+type ValidationError struct {
+	Key   string
+	Error string
+}
+
 func NewValidator(logger Logger) *Validator {
 	return &Validator{logger}
 }
 
 func (v *Validator) ValidateJSONBody(body interface{}) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if err := c.ShouldBindBodyWith(&body, binding.JSON); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		v.logger.Info("Request failed due to validation error")
 
-		if validateErr := validator.New().Struct(&body); validateErr != nil {
-			v.logger.Error(fmt.Sprintf("Request body failed to validate due to: %e", validateErr))
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": validateErr.Error()})
-			return
+		if validationErr := c.ShouldBindBodyWith(&body, binding.JSON); validationErr != nil {
 
+			errorList := validationErr.(validator.ValidationErrors)
+			errors := make([]*ValidationError, 0)
+
+			for _, error := range errorList {
+				currentError := &ValidationError{Key: error.Field(), Error: error.ActualTag()}
+				errors = append(errors, currentError)
+			}
+
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors})
+			return
 		}
 
 		c.Set("body", body)
