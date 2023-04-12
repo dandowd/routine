@@ -19,6 +19,7 @@ func buildIntegrationOptions() fx.Option {
 
 func TestMain(m *testing.M) {
 	cxt := context.Background()
+	dbContainer := NewDbContainer()
 
 	app := builder.AppBuilderWithOptions(buildIntegrationOptions())
 
@@ -31,6 +32,8 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	stopErr := app.Stop(cxt)
+
+	dbContainer.Cleanup()
 
 	if stopErr != nil {
 		panic(stopErr)
