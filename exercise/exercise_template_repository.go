@@ -11,16 +11,16 @@ import (
 
 var tableName = "Exercises"
 
-type ExerciseRepo struct {
+type ExerciseTemplateRepo struct {
 	client *dynamodb.DynamoDB
 	logger common.Logger
 }
 
-func NewExersiceRepo(client *dynamodb.DynamoDB, logger common.Logger) common.CollectionRepository[ExerciseEntity] {
-	return &ExerciseRepo{client, logger}
+func NewExersiceTemplateRepo(client *dynamodb.DynamoDB, logger common.Logger) common.CollectionRepository[ExerciseTemplateEntity] {
+	return &ExerciseTemplateRepo{client, logger}
 }
 
-func (r *ExerciseRepo) GetPage(page int, limit int) (*[]*ExerciseEntity, *common.RepositoryError) {
+func (r *ExerciseTemplateRepo) GetPage(page int, limit int) (*[]*ExerciseTemplateEntity, *common.RepositoryError) {
 	output, err := r.client.Scan(&dynamodb.ScanInput{
 		TableName: &tableName,
 		Limit:     aws.Int64(int64(limit)),
@@ -30,7 +30,7 @@ func (r *ExerciseRepo) GetPage(page int, limit int) (*[]*ExerciseEntity, *common
 		return nil, common.NewRepositoryError(common.DatabaseError, err.Error())
 	}
 
-	collection := make([]*ExerciseEntity, 0)
+	collection := make([]*ExerciseTemplateEntity, 0)
 
 	if err := dynamodbattribute.UnmarshalListOfMaps(output.Items, collection); err != nil {
 		return nil, common.NewRepositoryError(common.DatabaseError, err.Error())
@@ -39,7 +39,7 @@ func (r *ExerciseRepo) GetPage(page int, limit int) (*[]*ExerciseEntity, *common
 	return &collection, nil
 }
 
-func (r *ExerciseRepo) Get(id string) (*ExerciseEntity, *common.RepositoryError) {
+func (r *ExerciseTemplateRepo) Get(id string) (*ExerciseTemplateEntity, *common.RepositoryError) {
 	partitionKey, err := dynamodbattribute.ConvertTo(fmt.Sprintf("exercise#%s", id))
 
 	if err != nil {
@@ -56,7 +56,7 @@ func (r *ExerciseRepo) Get(id string) (*ExerciseEntity, *common.RepositoryError)
 		return nil, common.NewRepositoryError(common.NotFound, fmt.Sprintf("Item not found"))
 	}
 
-	entity := ExerciseEntity{}
+	entity := ExerciseTemplateEntity{}
 
 	if err := dynamodbattribute.UnmarshalMap(output.Item, &entity); err != nil {
 		r.logger.Error(fmt.Sprintf("Fatal error while unmarshalling exercise from dynamodb: %s", err))
@@ -66,7 +66,7 @@ func (r *ExerciseRepo) Get(id string) (*ExerciseEntity, *common.RepositoryError)
 	return &entity, nil
 }
 
-func (r *ExerciseRepo) Insert(entity ExerciseEntity) (*ExerciseEntity, *common.RepositoryError) {
+func (r *ExerciseTemplateRepo) Insert(entity ExerciseTemplateEntity) (*ExerciseTemplateEntity, *common.RepositoryError) {
 	av, err := dynamodbattribute.MarshalMap(entity)
 
 	if err != nil {
@@ -94,7 +94,7 @@ func (r *ExerciseRepo) Insert(entity ExerciseEntity) (*ExerciseEntity, *common.R
 		return nil, common.NewRepositoryError(common.DatabaseError, fmt.Sprintf("Could not insert Exercise Entity"))
 	}
 
-	updateEntity := ExerciseEntity{}
+	updateEntity := ExerciseTemplateEntity{}
 
 	if err := dynamodbattribute.UnmarshalMap(output.Attributes, &updateEntity); err != nil {
 		// if the entity is inserted but can't be unmarshalled we will get an error everytime this record is fetched
