@@ -1,7 +1,9 @@
 package infrastructure
 
-import "github.com/aws/aws-sdk-go-v2/aws"
+import "github.com/aws/aws-sdk-go/aws"
 
 func NewAWSConfig() *aws.Config {
-	panic("Not implemented")
+	return &aws.Config{
+		Region: aws.String("us-east-1"),
+	}
 }
