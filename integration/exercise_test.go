@@ -13,13 +13,17 @@ import (
 )
 
 func buildIntegrationOptions() fx.Option {
-	return fx.Options()
+	return fx.Options(
+		fx.Replace(NewAWSIntegrationTestConfig()),
+	)
 
 }
 
 func TestMain(m *testing.M) {
 	cxt := context.Background()
+
 	dbContainer := NewDbContainer()
+	defer dbContainer.Cleanup()
 
 	app := builder.AppBuilderWithOptions(buildIntegrationOptions())
 
@@ -32,8 +36,6 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	stopErr := app.Stop(cxt)
-
-	dbContainer.Cleanup()
 
 	if stopErr != nil {
 		panic(stopErr)
@@ -65,7 +67,7 @@ func TestPostExerciseShouldPassWithBody(t *testing.T) {
 	// Given
 	client := http.Client{}
 	// When
-	res, err := client.Post("http://localhost:8080/exercise", "application/json", strings.NewReader(`{"name": "bench press", "repScheme": "flat"}`))
+	res, err := client.Post("http://localhost:8080/exercise", "application/json", strings.NewReader(`{"name": "bench press", "description": "flat"}`))
 	// The
 	if err != nil {
 		t.Error(err)
