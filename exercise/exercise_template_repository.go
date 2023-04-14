@@ -16,6 +16,12 @@ type ExerciseTemplateRepo struct {
 	logger common.Logger
 }
 
+type ExerciseTemplateEntity struct {
+	Id          string
+	Name        string
+	Description string
+}
+
 func NewExersiceTemplateRepo(client *dynamodb.DynamoDB, logger common.Logger) common.CollectionRepository[ExerciseTemplateEntity] {
 	return &ExerciseTemplateRepo{client, logger}
 }

@@ -13,15 +13,9 @@ type createExerciseDto struct {
 	Description string `json:"description" binding:"required"`
 }
 
-type ExerciseTemplateEntity struct {
-	Id          string
-	Name        string
-	Description string
-}
-
 type ExerciseService struct {
 	logger common.Logger
-	repo   common.Repository[ExerciseTemplateEntity]
+	repo   common.CollectionRepository[ExerciseTemplateEntity]
 }
 
 func (r *ExerciseService) createExerciseHandler(c *gin.Context) {
