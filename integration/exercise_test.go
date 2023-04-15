@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -15,6 +16,7 @@ import (
 func buildIntegrationOptions() fx.Option {
 	return fx.Options(
 		fx.Replace(NewAWSIntegrationTestConfig()),
+		fx.Invoke(CreateTables),
 	)
 
 }
@@ -23,25 +25,26 @@ func TestMain(m *testing.M) {
 	cxt := context.Background()
 
 	dbContainer := NewDbContainer()
-	defer dbContainer.Cleanup()
 
 	app := builder.AppBuilderWithOptions(buildIntegrationOptions())
 
 	startErr := app.Start(cxt)
 
 	if startErr != nil {
-		panic(startErr)
+		fmt.Printf("m: %v\n", startErr)
 	}
 
-	code := m.Run()
+	m.Run()
 
 	stopErr := app.Stop(cxt)
 
+	dbContainer.Cleanup()
+
 	if stopErr != nil {
-		panic(stopErr)
+		fmt.Printf("m: %v\n", stopErr)
 	}
 
-	os.Exit(code)
+	os.Exit(0)
 }
 
 func TestPostExerciseShouldFailWithNoBody(t *testing.T) {

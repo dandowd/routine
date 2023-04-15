@@ -3,6 +3,8 @@ package integration_test
 import (
 	"context"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -59,4 +61,26 @@ func NewDbContainer() *DbContainer {
 func (d *DbContainer) Cleanup() {
 	d.client.ContainerStop(context.Background(), d.containerId, container.StopOptions{})
 	d.client.ContainerRemove(context.Background(), d.containerId, types.ContainerRemoveOptions{RemoveVolumes: true})
+}
+
+func CreateTables(client *dynamodb.DynamoDB) {
+	client.CreateTable(&dynamodb.CreateTableInput{
+		TableName: aws.String("Exercises"),
+		AttributeDefinitions: []*dynamodb.AttributeDefinition{
+			{
+				AttributeName: aws.String("partition"),
+				AttributeType: aws.String("S"),
+			},
+		},
+		KeySchema: []*dynamodb.KeySchemaElement{
+			{
+				AttributeName: aws.String("partition"),
+				KeyType:       aws.String("HASH"),
+			},
+		},
+		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
+			ReadCapacityUnits:  aws.Int64(5),
+			WriteCapacityUnits: aws.Int64(5),
+		},
+	})
 }

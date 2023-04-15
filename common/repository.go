@@ -7,7 +7,7 @@ type Repository[T interface{}] interface {
 
 type CollectionRepository[T interface{}] interface {
 	Repository[T]
-	GetPage(page int, limit int) (*[]*T, *RepositoryError)
+	GetPage(startId string, limit int) (*[]*T, *RepositoryError)
 }
 
 type RepositoryErrorType string
@@ -32,4 +32,10 @@ func (e *RepositoryError) Type() RepositoryErrorType {
 
 func NewRepositoryError(errorType RepositoryErrorType, message string) *RepositoryError {
 	return &RepositoryError{errorType, message}
+}
+
+type DbTable[T interface{}] interface {
+	Get(id string) (*T, error)
+	Put(entity T) (*T, error)
+	GetPage(limit int, startId *string) (*[]*T, error)
 }
